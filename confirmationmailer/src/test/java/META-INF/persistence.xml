@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     This file is part of free utilities created by Joga Singh <joga.singh@gmail.com>.
+     You are free to copy/modify/distribute the files to use it in any way you like.
+     However as a credit, author's name should be mentioned in the file header.
+     
+     See the complete license terms (MIT License) in LICENSE.TXT included in the package.
+     
+ -->
+
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="mailerLocal" transaction-type="RESOURCE_LOCAL">
+		<class>com.punjuprogrammers.confirmationmailer.MailToken</class>
+		<properties>
+			<property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:hsql://localhost/voctrainer"/>
+			<property name="javax.persistence.jdbc.user" value="SA"/>
+			<property name="javax.persistence.jdbc.password" value=""/>
+			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
+		</properties>
+	</persistence-unit>
+</persistence>
