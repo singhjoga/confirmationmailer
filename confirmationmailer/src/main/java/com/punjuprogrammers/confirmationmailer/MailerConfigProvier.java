@@ -10,7 +10,24 @@ package com.punjuprogrammers.confirmationmailer;
 
 import java.util.List;
 
+/**
+ * {@link ConfirmationMailer} needed configuration provider.
+ * 
+ * @author Joga Singh <joga.singh@gmail.com>
+ *
+ */
 public interface MailerConfigProvier {
+	/**
+	 * {@link ConfirmationMailer} related configuration.
+	 * 
+	 * @return
+	 */
 	public MailerConfig getMailConfig();
+
+	/**
+	 * List of templates which are used for sending mails.
+	 * 
+	 * @return
+	 */
 	public List<MailerTemplate> getMailerTemplates();
 }

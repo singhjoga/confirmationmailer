@@ -10,6 +10,17 @@ package com.punjuprogrammers.confirmationmailer;
 
 import javax.persistence.EntityManager;
 
+/**
+ * Provider interface to inject JPA EntityManager into {@link ConfirmationMailer}.
+ * 
+ * @author Joga Singh <joga.singh@gmail.com>
+ *
+ */
 public interface MailerPersistentProvider {
+	/**
+	 * Returns JPA EntityManager.
+	 * 
+	 * @return
+	 */
 	public EntityManager getEntityManager();
 }

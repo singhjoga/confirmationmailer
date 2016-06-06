@@ -24,6 +24,13 @@ import javax.persistence.TypedQuery;
 import com.punjuprogrammers.confirmationmailer.utils.MailUtil;
 import com.punjuprogrammers.confirmationmailer.utils.Util;
 
+/**
+ * @author Joga Singh <joga.singh@gmail.com>
+ *
+ *         Main class providing the public interface for confirmationmailer library.
+ * 
+ * 
+ */
 public class ConfirmationMailer {
 	public static final int ERROR_TOKEN_NOT_FOUND = 10001;
 	public static final int ERROR_TOKEN_EXPIRED = 10002;
@@ -33,6 +40,17 @@ public class ConfirmationMailer {
 	private MailerConfig mailConfig;
 	private MailerPersistentProvider persistentProvider;
 
+	/**
+	 * Constructor. Some information need to be added to the 'persistence.xml' file. See the README.TXT for usage instructions.
+	 * 
+	 * @param configProvider
+	 *            a non-null object which provides the required configuration values.
+	 * @param persistentProvider
+	 *            a non-null provider to get the EntityManager from.
+	 * 
+	 * @see MailerConfigProvier
+	 * @see MailerPersistentProvider
+	 */
 	public ConfirmationMailer(MailerConfigProvier configProvider, MailerPersistentProvider persistentProvider) {
 		Util.assertNotNull(configProvider, "configProvider");
 		Util.assertNotNull(persistentProvider, "persistentProvider");
@@ -44,17 +62,56 @@ public class ConfirmationMailer {
 		}
 	}
 
+	/**
+	 * Sends mail.
+	 * 
+	 * This method sends a mail to <code>mailId</code> with the mail contents identified by template <code>mailType</code> after replacing the
+	 * template fields with the values from <code>fields</code>.
+	 * 
+	 * @param mailId
+	 *            mail address of the receiver. Null or empty value will cause an {@link IllegalArgumentException}
+	 * @param mailType
+	 *            name of the template from the list given in constructor (see {@link MailerConfigProvier}. Null, empty or invalid value will cause an
+	 *            {@link IllegalArgumentException}.
+	 * @param fields
+	 *            map of field names and their values for the given <code>mailType</code>. Null value will cause an {@link IllegalArgumentException}.
+	 *            If any of the template field is missing, an {@link IllegalStateException} is thrown.
+	 * @throws ConfirmationMailerException
+	 *             thrown if mail cannot be send due to any reason.
+	 */
 	public void sendMail(String mailId, String mailType, Map<String, String> fields) throws ConfirmationMailerException {
 		sendMail(mailId, mailType, fields, null, false);
 	}
 
+	/**
+	 * Sends a mail after generating a unique TOKEN and using the token value in email.
+	 * 
+	 * It generates a unique token and uses this value in the email to replace the TOKEN field. This token is saved along with the
+	 * <code>mailType</code> and <code>userData</code> which is then used in validate methods. Token details can be retrieved with
+	 * {@link #getTokenDetails()} method.
+	 * 
+	 * @param mailId
+	 *            mail address of the receiver. Null or empty value will cause an {@link IllegalArgumentException}
+	 * @param mailType
+	 *            name of the template from the list given in constructor (see {@link MailerConfigProvier}. Null, empty or invalid value will cause an
+	 *            {@link IllegalArgumentException}.
+	 * @param fields
+	 *            map of field names and their values for the given <code>mailType</code>. Null value will cause an {@link IllegalArgumentException}.
+	 *            If any of the template field is missing, an {@link IllegalStateException} is thrown.
+	 * @param userData
+	 *            this optional string argument can be used to stored any related data i.e. User Id of the person the mail is sent to or any other
+	 *            data which can be used later to identify the mail.
+	 * @return generated token.
+	 * @throws ConfirmationMailerException
+	 *             thrown if mail cannot be send due to any reason.
+	 */
 	public String sendMailWithToken(String mailId, String mailType, Map<String, String> fields, String userData) throws ConfirmationMailerException {
 		return sendMail(mailId, mailType, fields, userData, true);
 	}
 
 	private String sendMail(String mailId, String mailType, Map<String, String> fields, String userData, boolean genToken) throws ConfirmationMailerException {
-		Util.assertNotNull(mailId, "mailId");
-		Util.assertNotNull(mailType, "mailType");
+		Util.assertNotNullNotEmpty(mailId, "mailId");
+		Util.assertNotNullNotEmpty(mailType, "mailType");
 		Util.assertNotNull(fields, "fields");
 
 		MailerTemplate mailTemplate = templatesMap.get(mailType);
@@ -97,7 +154,7 @@ public class ConfirmationMailer {
 				matcher.appendReplacement(buffer, "");
 				buffer.append(replacement);
 			} else {
-				throw new IllegalStateException("Token not found in template: " + matcher.group(1));
+				throw new IllegalStateException("Field not found in template: " + matcher.group(1));
 			}
 		}
 		matcher.appendTail(buffer);
@@ -121,6 +178,13 @@ public class ConfirmationMailer {
 		return token;
 	}
 
+	/**
+	 * Returns the token details.
+	 * 
+	 * @param token
+	 *            should be the token returned from the {@link #sendMailWithToken(String, String, Map, String)} method.
+	 * @return token details.
+	 */
 	public MailToken getTokenDetails(String token) {
 		Util.assertNotNull(token, "token");
 		MailToken mailToken = persistentProvider.getEntityManager().find(MailToken.class, token);
@@ -140,6 +204,18 @@ public class ConfirmationMailer {
 		}
 	}
 
+	/**
+	 * Validates the <code>token</code>. A valid token which is not used(activated) and not expired yet.
+	 * 
+	 * A token can be used only once and should be used (activated) within particular time. Token validity period is calculated from used template
+	 * when sending the mail (see {@link MailerTemplate}. This method is used to validate of the given <code>token</code> is still valid.
+	 * 
+	 * @param token
+	 *            token generated by {@link #sendMailWithToken(String, String, Map, String)}.
+	 * @return if the <code>token</code> is valid, token details otherwise an exception is thrown.
+	 * @throws ConfirmationMailerException
+	 *             is thrown if the token is not valid. Error code can be used for the particular reason.
+	 */
 	public MailToken validateToken(String token) throws ConfirmationMailerException {
 		Util.assertNotNull(token, "token");
 		MailToken mailToken = persistentProvider.getEntityManager().find(MailToken.class, token);
@@ -147,6 +223,15 @@ public class ConfirmationMailer {
 		return mailToken;
 	}
 
+	/**
+	 * Validates the <code>token</code> and mark itas used. See {@link #validateToken(String)} for more details.
+	 * 
+	 * @param token
+	 *            token generated by {@link #sendMailWithToken(String, String, Map, String)}.
+	 * @return if the <code>token</code> is valid, token details otherwise an exception is thrown.
+	 * @throws ConfirmationMailerException
+	 *             is thrown if the token is not valid. Error code can be used for the particular reason.
+	 */
 	public MailToken validateAndMarkUsedToken(String token) throws ConfirmationMailerException {
 		Util.assertNotNull(token, "token");
 		MailToken mailToken = persistentProvider.getEntityManager().find(MailToken.class, token);
@@ -160,6 +245,16 @@ public class ConfirmationMailer {
 		return mailToken;
 	}
 
+	/**
+	 * Validates the <code>token</code> and deletes it. See {@link #validateToken(String)} for more details. A deleted token is permanently deleted
+	 * from the database.
+	 * 
+	 * @param token
+	 *            token generated by {@link #sendMailWithToken(String, String, Map, String)}.
+	 * @return if the <code>token</code> is valid, token details otherwise an exception is thrown.
+	 * @throws ConfirmationMailerException
+	 *             is thrown if the token is not valid. Error code can be used for the particular reason.
+	 */
 	public MailToken validateAndDeleteToken(String token) throws ConfirmationMailerException {
 		Util.assertNotNull(token, "token");
 		MailToken mailToken = persistentProvider.getEntityManager().find(MailToken.class, token);
@@ -172,6 +267,12 @@ public class ConfirmationMailer {
 		return mailToken;
 	}
 
+	/**
+	 * Deletes the <code>token</code> permanently from database.
+	 * 
+	 * @param token
+	 * @return token details.
+	 */
 	public MailToken deleteToken(String token) {
 		Util.assertNotNull(token, "token");
 		MailToken mailToken = persistentProvider.getEntityManager().find(MailToken.class, token);
@@ -183,6 +284,13 @@ public class ConfirmationMailer {
 		return mailToken;
 	}
 
+	/**
+	 * Deletes all tokens whose expiry date is till <code>expiryDateTill</code>.
+	 * 
+	 * @param expiryDateTill
+	 *            timestamp till the tokens should be deleted.
+	 * @return the number of records deleted.
+	 */
 	public int deleteAll(Date expiryDateTill) {
 		Util.assertNotNull(expiryDateTill, "expiryDateTill");
 		EntityManager em = persistentProvider.getEntityManager();
@@ -195,6 +303,11 @@ public class ConfirmationMailer {
 		return count;
 	}
 
+	/**
+	 * Deletes all used tokens.
+	 * 
+	 * @return the number of records deleted.
+	 */
 	public int deleteAllUsed() {
 		EntityManager em = persistentProvider.getEntityManager();
 		Query q = em.createQuery(" DELETE FROM MailToken m WHERE m.status <= :status");
@@ -206,6 +319,14 @@ public class ConfirmationMailer {
 		return count;
 	}
 
+	/**
+	 * Returns all tokens whose expiry date is till <code>expiryDateTill</code>.
+	 * 
+	 * @param expiryDateTill
+	 *            timestamp.
+	 * 
+	 * @return list of token objects.
+	 */
 	public List<MailToken> getAllExpired(Date expiryDateTill) {
 		Util.assertNotNull(expiryDateTill, "expiryDateTill");
 		EntityManager em = persistentProvider.getEntityManager();
@@ -214,6 +335,11 @@ public class ConfirmationMailer {
 		return q.getResultList();
 	}
 
+	/**
+	 * Returns the list of all used tokens
+	 * 
+	 * @return
+	 */
 	public List<MailToken> getAllUsed() {
 		EntityManager em = persistentProvider.getEntityManager();
 		TypedQuery<MailToken> q = em.createNamedQuery("MailToken_Status", MailToken.class);
@@ -221,6 +347,15 @@ public class ConfirmationMailer {
 		return q.getResultList();
 	}
 
+	/**
+	 * Returns list of token objects who are used between <code>usedDateFrom</code> and <code>usedDateTill</code>.
+	 * 
+	 * @param usedDateFrom
+	 *            start timestamp.
+	 * @param usedDateTill
+	 *            end timestamp.
+	 * @return list of token objects.
+	 */
 	public List<MailToken> getAllUsed(Date usedDateFrom, Date usedDateTill) {
 		Util.assertNotNull(usedDateFrom, "usedDateFrom");
 		Util.assertNotNull(usedDateTill, "usedDateTill");
