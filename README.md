@@ -26,7 +26,7 @@ Library can be used as a source or by including the jar in `bin` folder into the
 `class` element should be specified as for `com.punjuprogrammers.confirmationmailer.MailToken`, the only persistence entity. 
 Also the property `hibernate.hbm2ddl.auto` should be set to `update` to create the necessary database tables automatically.
 
-Library is well documented. Online documentation can be found at https://github.com/singhjoga/confirmationmailer/blob/master/javadocs/index.html
+Library is well documented. Documentation can be downloaded from  https://github.com/singhjoga/confirmationmailer/blob/master/javadocs/apidocs.zip link.
 
 
 Comprehensive test cases are written to test the various uses. This can be a good starting point for start using the library. Test cases can be found in source code at https://github.com/singhjoga/confirmationmailer/blob/master/confirmationmailer/src/test/java/com/punjuprogrammers/confirmationmailer/ConfirmationMailerTest.java
