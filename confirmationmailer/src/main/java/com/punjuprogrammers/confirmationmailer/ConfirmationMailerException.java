@@ -11,7 +11,7 @@ package com.punjuprogrammers.confirmationmailer;
 /**
  * Exception return from various {@link ConfirmationMailer} methods.
  * 
- * @author Joga Singh <joga.singh@gmail.com>
+ * @author Joga Singh - joga.singh@gmail.com
  *
  */
 public class ConfirmationMailerException extends Exception {

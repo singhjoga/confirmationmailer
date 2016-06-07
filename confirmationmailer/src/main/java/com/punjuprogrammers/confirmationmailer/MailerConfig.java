@@ -13,7 +13,7 @@ import com.punjuprogrammers.confirmationmailer.utils.Util;
 /**
  * {@link ConfirmationMailer} configuration options.
  * 
- * @author Joga Singh <joga.singh@gmail.com>
+ * @author Joga Singh - joga.singh@gmail.com
  *
  */
 public class MailerConfig {

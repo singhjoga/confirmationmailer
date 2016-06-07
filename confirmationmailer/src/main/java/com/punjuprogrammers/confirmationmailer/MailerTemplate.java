@@ -13,16 +13,16 @@ import com.punjuprogrammers.confirmationmailer.utils.Util;
 /**
  * Mail template definition. Mails can be sent for different purposes, therefore different mail templates. Each mail template is identified by
  * <code>mailType</code> field. Mail template can contain the substitute variables which are replaced with actual values during runtime. Below is a
- * sample email template: <code>
+ * sample email template: <pre> {@code
  * Dear ${TITLE} ${LAST_NAME} <br>
  * Thank your for choosing HelloPunju for your International calling.
  * Please click on the below link to active your phone no. ${PHONE_NO} for calling. <br>
- * <br><br><a href='http://www.hellopunju.com/activation?token=${TOKEN}'>Click here to activate</a>"
- * <br><br>HelloPunju Team"
- * </code>
+ * <br><br><a href='http://www.hellopunju.com/activation?token=$}{TOKEN}{@code '>Click here to activate</a>
+ * <br><br>HelloPunju Team }
+ * </pre>
  * 
  * 
- * @author Joga Singh <joga.singh@gmail.com>
+ * @author Joga Singh - joga.singh@gmail.com
  *
  */
 public class MailerTemplate {

@@ -25,11 +25,9 @@ import com.punjuprogrammers.confirmationmailer.utils.MailUtil;
 import com.punjuprogrammers.confirmationmailer.utils.Util;
 
 /**
- * @author Joga Singh <joga.singh@gmail.com>
- *
- *         Main class providing the public interface for confirmationmailer library.
+ * Main class providing the public interface for confirmationmailer library.
  * 
- * 
+ * @author Joga Singh - joga.singh@gmail.com
  */
 public class ConfirmationMailer {
 	public static final int ERROR_TOKEN_NOT_FOUND = 10001;
@@ -88,7 +86,7 @@ public class ConfirmationMailer {
 	 * 
 	 * It generates a unique token and uses this value in the email to replace the TOKEN field. This token is saved along with the
 	 * <code>mailType</code> and <code>userData</code> which is then used in validate methods. Token details can be retrieved with
-	 * {@link #getTokenDetails()} method.
+	 * {@link #getTokenDetails(String)} method.
 	 * 
 	 * @param mailId
 	 *            mail address of the receiver. Null or empty value will cause an {@link IllegalArgumentException}
@@ -270,7 +268,7 @@ public class ConfirmationMailer {
 	/**
 	 * Deletes the <code>token</code> permanently from database.
 	 * 
-	 * @param token
+	 * @param token a valid token.
 	 * @return token details.
 	 */
 	public MailToken deleteToken(String token) {
@@ -338,7 +336,7 @@ public class ConfirmationMailer {
 	/**
 	 * Returns the list of all used tokens
 	 * 
-	 * @return
+	 * @return list of objects
 	 */
 	public List<MailToken> getAllUsed() {
 		EntityManager em = persistentProvider.getEntityManager();
